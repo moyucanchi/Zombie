@@ -7,8 +7,8 @@ public class Blood : MonoBehaviour {
     private GameObject OVR;
     // Use this for initialization
     void Start () {
-        _animator = transform.parent.gameObject.GetComponent<Animator>();//获取父对象
-        OVR = GameObject.Find("OVRPlayerController");
+        _animator = transform.GetComponent<Animator>();//获取父对象
+		OVR = GameObject.Find("[CameraRig]");
         blood = OVR.GetComponentInChildren<ParticleSystem>();
     }
 	

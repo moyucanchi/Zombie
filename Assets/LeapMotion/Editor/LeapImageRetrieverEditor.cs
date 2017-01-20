@@ -1,19 +1,38 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System.Collections.Generic;
 
-[CustomEditor (typeof (LeapImageRetriever))]
-public class LeapImageRetrieverEditor : Editor {
+namespace Leap.Unity{
+  [CustomEditor(typeof(LeapImageRetriever))]
+  public class LeapImageRetrieverEditor : CustomEditorBase {
+
+    private GUIContent _brightTextureGUIContent;
+    private GUIContent _rawTextureGUIContent;
+    private GUIContent _distortionTextureGUIContent;
+
+    protected override void OnEnable() {
+      base.OnEnable();
+
+      _brightTextureGUIContent = new GUIContent("Bright Texture");
+      _rawTextureGUIContent = new GUIContent("Raw Texture");
+      _distortionTextureGUIContent = new GUIContent("Distortion Texture");
+    }
 
     public override void OnInspectorGUI() {
-        base.OnInspectorGUI();
+      base.OnInspectorGUI();
 
-        SerializedProperty eyeProperty = serializedObject.FindProperty("eye");
-        if (eyeProperty.enumValueIndex == -1) {
-            LeapImageRetriever retrieverScript = target as LeapImageRetriever;
-            bool containsLeft = retrieverScript.gameObject.name.ToLower().Contains("left");
-            eyeProperty.enumValueIndex = containsLeft ? (int)LeapImageRetriever.EYE.LEFT : (int)LeapImageRetriever.EYE.RIGHT;
-            serializedObject.ApplyModifiedProperties();
-        }
+      if (Application.isPlaying) {
+        LeapImageRetriever retriever = target as LeapImageRetriever;
+        var data = retriever.TextureData;
+        var dataType = typeof(Object);
+
+        EditorGUI.BeginDisabledGroup(true);
+        EditorGUILayout.ObjectField(_brightTextureGUIContent, data.BrightTexture.CombinedTexture, dataType, true);
+        EditorGUILayout.ObjectField(_rawTextureGUIContent, data.RawTexture.CombinedTexture, dataType, true);
+        EditorGUILayout.ObjectField(_distortionTextureGUIContent, data.Distortion.CombinedTexture, dataType, true);
+        EditorGUI.EndDisabledGroup();
+      }
     }
+  }
 }
